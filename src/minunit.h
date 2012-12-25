@@ -1,3 +1,11 @@
+/* File: minunit.h
+ * Version: 1.0
+ * Purpose: Definitions for testing 
+ * Author: Matthew Clemens
+ * Copyright: BSD 
+*/
+
+
 #ifndef _minunit_h
 #define _minunit_h
 #include <stdio.h>
