@@ -1,27 +1,31 @@
 Axon
 ====
 
-Implementation of a DHT
+"An axon (from Greek, axis) also known as a nerve fiber; is a long, slender projection of a nerve cell.
+The function of the axon is to transmit information to different neurons, muscles and glands."
+
+An implementation of a DHT (Distributed Hash Table)
 
 Primary Model
 ============
 
-## Based on Dynamo, Chord, etc
-- Given a key, it maps that key to a node.
+* Given a key, it maps that key to a node.
+* A single pair of important API calls. IE; `lookup(key)`, `distribute(key, data)` 
+* assigns each node and key an fixed length bit identifier.
+  * node's id is derived from  it's ip.
+  * key id from a hash of application defined string key.
 
-* Provides a single API call `lookup(axon, key)`
 * utilizes consitant hashing to help balance load.
-  * when hash table resizing only k/n key need to be remapped.(k=num keys, n= num nodes)
+  * when hash table needs resizing, only k/n key need to be remapped.(k=num keys, n= num nodes)
+
 * each node needs routing info for only a small number of nodes
   * O(log n) 
   * lookups with O(log n) messages between them
-*assigns each node and key an m bit identifier.
-  * nodes id from ip
-  * key id from a hash of string key
+
 * scalable key lookup
   * each node maintains a routing table (finger table) with m entries
-    * O(log n) are distinct
-    * index i is the id of the first node s the succeeds this nod n by at elast 2^(i-1). (0 index)
+  * O(log n) are distinct
+  * index i is the id of the first node s the succeeds this nod n by at elast 2^(i-1). (0 index)
 
 Inspiration
 ===========
@@ -32,6 +36,7 @@ Inspiration
 * redis
 * nbds
 * Unix Network Programming
+* pthreads programming
 
 ## Philosophy / Design
 * The Architecture of Open Source Applications
@@ -47,7 +52,7 @@ Needed Vocab
 
 * *Identity Circle*: the set of identifiers that are wrapped in the identifer space.
 * *m*: the number of bits that make up the identifers for key and node
-* *r*: number of succeesors stored at a node
+* *r*: number of successors stored at a node
 * *node*: the physical machines that the DHT is built upon
 * *k*: number of successors that a single nodes keys are replicated to.
 * *successor*: th node that is equal to or first following  the hashed values of a key or node
@@ -58,21 +63,40 @@ Needed Vocab
 Global Picture
 ==============
 
-The axon api is the networking and communications layer between nodes on a distributed system. 
-design structure for axon is based upon a few key parts. first its importent to know that it is a single process that contains multiple threads running its tasks.
-the main thread is responsible for configuration and monitering of itself, as well as accepting and handing off incomping new connections to the thread workers.
+The axon api is the networking and communications layer between nodes on a distributed system. The design and archecture for axon is based upon a few key parts. First its importent to know that it is a single process that contains multiple threads running non blocking functions or distpatching work to others. Some of the dispatches are to other axon running computers, or they could be to this computers idleing threads looking for work.
+
+The main thread is responsible for inital configuration and monitering of itself, as well as accepting and handing off of incomping new connections to the thread workers.
+
+Thread workers handle request processing related to a wide array of tasks. Incoming tasks needed to be done may be simple in-memory key checks, while others might be long, large file transfers. This hetrogenous group of tasks requires different approachs which ultimitly end up being processed by the same functions. The disparity comes from time constraints, ex tcp timeouts vs a log(n) in memory key look up. One has a millisecond granularity while the latter has clock cycle precesion. The timeing of these functions needs to be adjusted accordingly. But why should we be timing these anyway? Statistics of your process is invaluable information. Improving, recording, and monitering provides a means to regulate. or even better a angle to pitch to investors. These stats being recored need to be consistant across every function. 
+A more through look at the types of processing done by the worker threads revels specific tasks in certain areas. 
+
+    * Routing of packets to and from our machine. 
+
+This requires a standard of some kind in the comunication across nodes. A agreed upon format is read and checked per request, with the various cases of message types being jumped to per the type of message. Each recieved transfer of bytes is inspected, followed by any other messaging processing function needing to be run. From there it is passed to a type of task that,
+
+* Gets or Sets the key value pairs that are inserted and deleted from the node. 
+
+Depending on the truthyness of the key being present, the thread may have to preform  network io or file io.File io blocking is avoided by useing the aio api. Asyncronous File Input / Output. Fast key request are served from in-memory keys, while frequently and recently pull values are stored in the remaining allocated memory.
+
+* Network Maintance internally and between nodes.
+
+Periodic checks and fixes are needed on the network. With nodes sending periodic heartbeats, as well as avoiding timeouts. Fixes to the internal routing need to be applied following other changes. Also node arrivals and depautures from the network cluster. Network io is non blocking by using notification and polling api's ie, epoll kqueue, poll, etc.
+
+Processing hooks for a application using this library are placeable in a priority worker queue.
 
 
-
-* Applications
-__Top Layer
+## Where does Axon fit?
+__Top Layer__
+* Applications, users, and so on.
 * Semantic Layer  
-* Network Layer  - Axon
+* Network Layer  - *Axon*
 * Database Layer 
+* OS, Hardware, and so on.
 __Bottom Layer__
-* OS, etc 
 
 
+### OSI Model
+Level 7, (application layer).
 
 Axon API
 ========
