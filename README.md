@@ -1,8 +1,8 @@
 Axon
 ====
 
-"An axon (from Greek, axis) also known as a nerve fiber; is a long, slender projection of a nerve cell.
-The function of the axon is to transmit information to different neurons, muscles and glands."
+> An axon (from Greek, axis) also known as a nerve fiber; is a long, slender projection of a nerve cell.
+> The function of the axon is to transmit information to different neurons, muscles and glands."
 
 An implementation of a DHT (Distributed Hash Table)
 
