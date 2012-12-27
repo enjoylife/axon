@@ -1,1 +1,7 @@
+# File: valscript
+# Version: 1.0
+# Purpose:  helper for running valgrind tests with a specific set commands.
+# Author: Matthew Clemens
+# Copyright: BSD, see LICENSE for more details 
+
 valgrind --leak-check=full --show-reachable=yes --track-origins=yes -v $1
