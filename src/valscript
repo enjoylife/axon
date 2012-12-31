@@ -4,4 +4,4 @@
 # Author: Matthew Clemens
 # Copyright: BSD, see LICENSE for more details 
 
-valgrind --leak-check=full --show-reachable=yes --track-origins=yes -v $1
+valgrind --leak-check=full --show-reachable=yes --track-origins=yes --suppressions=./val_suppression -v $1

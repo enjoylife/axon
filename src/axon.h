@@ -1,6 +1,6 @@
 /* File: axon.h
  * Version: 1.0
- * Purpose:  primary definitions of implementation 
+ * Purpose:  primary definitions of axon implementation 
  * Author: Matthew Clemens
  * Copyright: Modified BSD, see LICENSE for more details 
 */

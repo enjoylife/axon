@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
     status = pthread_key_create (&engine_key, destructor);
     if (status != 0)
         err_abort (status, "Create key");
-    status = workq_init (&workq, 4, engine_routine);
+    status = workq_init (&workq, 8, engine_routine);
     if (status != 0)
         err_abort (status, "Init work queue");
     status = pthread_create (&thread_id, NULL, thread_routine, NULL);

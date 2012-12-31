@@ -20,6 +20,7 @@
  * processing threads will begin to shut down. (They will be
  * restarted when work appears.)
  */
+#include <stdint.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
@@ -27,6 +28,8 @@
 #include <sys/types.h>
 #include "errors.h"
 #include "workq.h"
+
+
 
 /*
  * Thread start routine to serve the work queue.

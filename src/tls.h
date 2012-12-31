@@ -1,10 +1,12 @@
-/* 
- * Written by Josh Dybnis and released to the public domain, as explained at
- * http://creativecommons.org/licenses/publicdomain
- *
- * A platform independant wrapper around thread-local storage. On platforms that don't support 
- * __thread variables (e.g. Mac OS X), we have to use the pthreads library for thread-local storage 
- */
+/* File: tls.h
+ * Version: 1.0
+ * Purpose: A platform independant wrapper around thread-local storage.
+ * On platforms that don't support  __thread variables (e.g. Mac OS X), 
+ * use the pthreads library for thread-local storage.
+ * Author: Josh Dybnis 
+ * Copyright: Public Domain
+*/
+
 #ifndef TLS_H
 #define TLS_H
 
@@ -12,7 +14,8 @@
 #define DECLARE_THREAD_LOCAL(name, type) __thread type name
 #define INIT_THREAD_LOCAL(name) 
 #define SET_THREAD_LOCAL(name, value) name = value
-#define LOCALIZE_THREAD_LOCAL(name, type)
+#define GET_THREAD_LOCAL(name, type)
+#define DESTROY_THREAD_LOCAL(name)
 
 #else//!__ELF__
 
@@ -27,7 +30,9 @@
 
 #define SET_THREAD_LOCAL(name, value) pthread_setspecific(name##_KEY, (void *)(size_t)value);
 
-#define LOCALIZE_THREAD_LOCAL(name, type) type name = (type)(size_t)pthread_getspecific(name##_KEY)
+#define GET_THREAD_LOCAL(name, type) type name = (type)(size_t)pthread_getspecific(name##_KEY)
+
+#define DESTROY_THREAD_LOCAL(name) pthread_key_delete(name)
 
 #endif//__ELF__
 #endif//TLS_H
