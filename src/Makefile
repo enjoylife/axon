@@ -1,5 +1,5 @@
-#CFLAGS= -lpthread -g  -W 64 $(DEBUGFLAGS)
-CFLAGS= -pthread -g  -std=c99 -pedantic  $(DEBUGFLAGS)
+#CFLAGS= -pthread -g -D NDEBUG -std=c99 -pedantic  $(DEBUGFLAGS)
+CFLAGS= -pthread -g -O2 -std=c99 -pedantic -Wall -Wformat=0 $(DEBUGFLAGS)
 CC=gcc
 #CC=c99
 

@@ -29,8 +29,6 @@
 #include "errors.h"
 #include "workq.h"
 
-
-
 /*
  * Thread start routine to serve the work queue.
  */

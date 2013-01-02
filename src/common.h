@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 // following common convetion for debugging
 #ifndef NDEBUG
@@ -17,6 +18,7 @@
 #else
     #define DEBUG 0
 #endif
+
 
 /* Terminal colors  */
 #define RESET   "\033[0m"
@@ -40,14 +42,15 @@
     do {if(DEBUG) fprintf(stderr,"%-20s[%s:%d] "MSG" \n",M, __FILE__, __LINE__,__VA_ARGS__); } while(0)
 
 #define log_success(M, ...) _log_it(MSGSUCCESS,M, __VA_ARGS__)
-#define log_info(M, ...) _log_it(MSGINFO, M ,__VA_ARGS__)
+#define log_info(M, ...)  _log_it(MSGINFO, M ,__VA_ARGS__)
 #define log_debug(M, ...) _log_it(MSGDEBUG, M, __VA_ARGS__)
-#define log_warn(M, ...) _log_it(MSGWARN, (errno == 0 ? "n/a": strerror(errno), 1)
-#define xxx(M) _log_it(MSGINFO,"Made it. #%d",M)
+#define log_warn(M, ...)  _log_it(MSGWARN, M, __VA_ARGS__)
+#define xxx(M) _log_it(MSGINFO,"Made it. "BOLDGREEN "#%d" RESET,M)
 #define maybe(A, M) if(!(A)) { log_err(MSGERR,"Tried," M,1); errno=0; goto cleanup; }
 
 #define checkm(M) if((M)==NULL){_log_it(MSGERR,"Not enough memory.",1);exit(1);}
 #define checkp(M) if((M)!=0){_log_it(MSGERR,"Pthreads: %s" ,strerror(M));exit(1);}
+#define checks(M) if((M) !=SUCCESS){_log_it(MSGERR,"Pthreads: %s" ,strerror(M));exit(1);}
 
 // simple expanding macros
 #define	min(a,b)	((a) < (b) ? (a) : (b))
@@ -84,7 +87,7 @@
 
 #define SYNC_SWAP(addr,x)         ({ typeof(*(addr)) _old = *(addr); *(addr)  = (x); _old; })
 #define SYNC_CAS(addr,old,x)      ({ typeof(*(addr)) _old = *(addr); *(addr)  = (x); _old; })
-#define SYNC_CAS(addr,old,x)      ({ typeof(*(addr)) _old = *(addr); *(addr)  = (x); _old; })
+//#define SYNC_CAS(addr,old,x)      ({ typeof(*(addr)) _old = *(addr); *(addr)  = (x); _old; })
 //#define SYNC_CAS(addr,old,x)    ({ typeof(*(addr)) _old = *(addr); if ((old) == _old) { *(addr)  = (x); } _old; })
 #define SYNC_ADD(addr,n)          ({ typeof(*(addr)) _old = *(addr); *(addr) += (n); _old; })
 #define SYNC_FETCH_AND_OR(addr,x) ({ typeof(*(addr)) _old = *(addr); *(addr) |= (x); _old; })
@@ -94,6 +97,12 @@
 typedef enum STATUS {
     SUCCESS, 
     FAILURE,
+    EMPTY
 } STATUS;
 
+typedef enum TSTATE {           /* Thread states */
+    TS_ALIVE,                   /* Thread is alive */
+    TS_TERMINATED,              /* Thread terminated, not yet joined */
+    TS_JOINED                   /* Thread terminated, and joined */
+} TSTATE;
 #endif

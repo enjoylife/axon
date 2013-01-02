@@ -1,6 +1,7 @@
 
 /* Hello World program */
 
+#include <stdlib.h>
 #include<stdint.h>
 #include<stdio.h>
 #include<inttypes.h>
@@ -78,6 +79,17 @@ size_t cache_line_size() {
 #endif
 
 #endif
+typedef struct foo {
+    int data;
+}foo;
+int changeit(void * d, void * r){
+
+
+    foo * temp = d;
+    temp->data = 15;
+    return 1;
+}
+
 int main()
 {
     uint64_t val;
@@ -90,6 +102,12 @@ int main()
     printf(  "CPU Clock %" PRIu64 "\n", val);
     cache_size = cache_line_size();
     printf("Cache line size: %" PRIuPTR "\n", (uintptr_t) cache_size);
+    foo * f = malloc(sizeof(foo));
+    foo * ret = malloc(sizeof(foo));
+    f->data = 5;
+    changeit((void*)f, (void*)ret);
+    fprintf(stdout, "%d\n", f->data);
+
 
 }
 
